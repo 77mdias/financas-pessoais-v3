@@ -4,13 +4,10 @@
   
   # Diretório que será publicado
   publish = "dist"
-  
-  # Versão do Node.js
-  environment = { NODE_VERSION = "18" }
 
 [build.environment]
   # Configurações de ambiente para o build
-  NODE_ENV = "production"
+  NODE_VERSION = "18"
 
 # Configurações de redirecionamento para Single Page Application
 [[redirects]]
