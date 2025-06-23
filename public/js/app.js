@@ -218,7 +218,7 @@ class FinanceApp {
     const cancelBtn = document.getElementById('cancel-btn');
 
     form.reset();
-    delete form.dataset.editingId;
+    form.removeAttribute('data-editing-id');
     submitBtn.textContent = 'Adicionar Transação';
     cancelBtn.style.display = 'none';
   }
@@ -227,25 +227,23 @@ class FinanceApp {
    * Renderiza as transações na tela
    */
   renderTransactions() {
-    const container = document.getElementById('transactions-list');
-    if (!container) return;
+    const transactionsList = document.getElementById('transactions-list');
+    if (!transactionsList) return;
 
     if (this.transactions.length === 0) {
-      container.innerHTML = '<p>Nenhuma transação cadastrada.</p>';
+      transactionsList.innerHTML = '<p>Nenhuma transação encontrada.</p>';
       return;
     }
 
-    container.innerHTML = this.transactions.map(transaction => `
+    transactionsList.innerHTML = this.transactions.map(transaction => `
       <div class="transaction-item ${transaction.value >= 0 ? 'income' : 'expense'}">
         <div class="transaction-info">
-          <strong>${transaction.name}</strong>
-          <span class="transaction-value">
-            R$ ${transaction.value.toFixed(2).replace('.', ',')}
-          </span>
+          <span class="transaction-name">${transaction.name}</span>
+          <span class="transaction-value">R$ ${transaction.value.toFixed(2)}</span>
         </div>
         <div class="transaction-actions">
-          <button onclick="app.editTransaction(${transaction.id})" class="edit-btn">✏️</button>
-          <button onclick="app.deleteTransaction(${transaction.id})" class="delete-btn">🗑️</button>
+          <button onclick="app.editTransaction(${transaction.id})" class="edit-btn">✏️ Editar</button>
+          <button onclick="app.deleteTransaction(${transaction.id})" class="delete-btn">🗑️ Excluir</button>
         </div>
       </div>
     `).join('');
@@ -255,10 +253,11 @@ class FinanceApp {
    * Atualiza o saldo total
    */
   updateBalance() {
-    const balance = this.transactions.reduce((total, t) => total + (t.value || 0), 0);
+    const balance = this.transactions.reduce((sum, transaction) => sum + transaction.value, 0);
     const balanceElement = document.getElementById('balance');
+
     if (balanceElement) {
-      balanceElement.textContent = balance.toFixed(2).replace('.', ',');
+      balanceElement.textContent = balance.toFixed(2);
       balanceElement.className = balance >= 0 ? 'positive' : 'negative';
     }
   }
@@ -267,19 +266,20 @@ class FinanceApp {
    * Mostra mensagem de sucesso
    */
   showSuccess(message) {
-    // Implementação simples - você pode melhorar isso
+    console.log('✅ ' + message);
     alert('✅ ' + message);
   }
 
   /**
-   * Mostra mensagem de erro
+   * Mostra mensagem de alerta
    */
   showAlert(message) {
+    console.warn('⚠️ ' + message);
     alert('⚠️ ' + message);
   }
 
   /**
-   * Mostra erro geral
+   * Mostra mensagem de erro
    */
   showError(message) {
     console.error(message);
