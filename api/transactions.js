@@ -1,4 +1,4 @@
-// API Serverless para transações - Vercel Function (Node.js Runtime)
+// API para transações - Node.js
 
 // Dados iniciais que serão usados como fallback
 const initialTransactions = [

@@ -9,11 +9,11 @@ export class TransactionService {
     this.storage = new StorageService();
     this.useLocalStorage = true; // Prioriza localStorage para melhor performance
 
-    // Detecta automaticamente se está em produção (Vercel) ou desenvolvimento
+    // Detecta automaticamente se está em produção ou desenvolvimento
     if (!apiUrl) {
       const isProduction = window.location.hostname !== 'localhost';
       this.apiUrl = isProduction
-        ? '/api/transactions'  // Vercel serverless function
+        ? '/api/transactions'  // API de produção
         : 'http://localhost:3001/transactions';  // json-server local
     } else {
       this.apiUrl = apiUrl;

@@ -1,6 +1,5 @@
 # 💰 Finanças Pessoais - Sistema Moderno
 
-[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel)](https://financas-pessoais-v3.vercel.app)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript)](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
 [![Webpack](https://img.shields.io/badge/Webpack-5.0+-8DD6F9?logo=webpack)](https://webpack.js.org/)
 
@@ -10,7 +9,7 @@
 
 - ✅ **CRUD Completo** - Criar, editar, excluir e listar transações
 - 💾 **Persistência Local** - Dados salvos no localStorage
-- 🌐 **API Serverless** - Integração com Vercel Functions
+- 🌐 **API REST** - Integração com backend
 - 📱 **Interface Responsiva** - Funciona em desktop e mobile
 - ⚡ **Performance Otimizada** - Build otimizado com Webpack
 - 🎨 **Design Moderno** - Interface limpa e intuitiva
@@ -18,16 +17,14 @@
 
 ## 🚀 **Demo ao Vivo**
 
-**Acesse:** [financas-pessoais-v3.vercel.app](https://financas-pessoais-v3.vercel.app)
-
 ## 🛠️ **Tecnologias Utilizadas**
 
 - **Frontend:** JavaScript ES6+, CSS3, HTML5
 - **Build Tool:** Webpack 5 + Babel
 - **Bundling:** Module Federation, Code Splitting
 - **Styling:** SCSS, PostCSS
-- **Backend:** Vercel Serverless Functions
-- **Deploy:** Vercel Platform
+- **Backend:** Node.js API
+- **Deploy:** Configurável
 
 ## 📦 **Instalação e Uso**
 
@@ -77,11 +74,11 @@ npm run preview
 │   ├── 📁 styles/          # Estilos SCSS
 │   ├── 📁 ui/              # Interface do usuário
 │   └── 📁 utils/           # Utilitários
-├── 📁 api/                 # Vercel Serverless Functions
+├── 📁 api/                 # API Functions
 ├── 📁 public/              # Arquivos estáticos (dev)
 ├── 📁 dist/                # Build de produção
 ├── ⚙️ webpack.config.js    # Configuração Webpack
-├── ⚙️ vercel.json          # Configuração Vercel
+
 └── 📄 package.json         # Dependências e scripts
 ```
 

@@ -12,7 +12,6 @@
     "dev:webpack": "npm run webpack:dev",
     "dev:api": "npm run json-server",
     "build": "webpack --mode production",
-    "vercel-build": "webpack --mode production",
     "start": "npm run dev:webpack",
     "serve": "npm run json-server",
     "clean": "rimraf dist",
