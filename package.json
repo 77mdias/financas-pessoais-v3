@@ -1,7 +1,7 @@
 {
   "name": "12-exercicio-sistema-de-requisicao",
   "version": "2.0.0",
-  "main": "public/index.html",
+  "main": "dist/index.html",
   "type": "module",
   "scripts": {
     "json-server": "json-server --watch db.json --port 3001",
@@ -28,13 +28,13 @@
   "author": "",
   "license": "ISC",
   "description": "Aplicação modular de finanças pessoais com arquitetura ES6 modules",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
-    "@vercel/speed-insights": "^1.2.0",
     "babel-loader": "^10.0.0",
     "clean-webpack-plugin": "^4.0.0",
-    "copy-webpack-plugin": "^13.0.0",
+    "concurrently": "^9.2.0",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
     "json-server": "^1.0.0-beta.3",
@@ -45,8 +45,5 @@
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
-  },
-  "devDependencies": {
-    "concurrently": "^9.2.0"
   }
 }
