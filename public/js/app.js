@@ -1,3 +1,6 @@
+// Importa o CSS para o Webpack processar
+import '../css/styles.css';
+
 /**
  * Aplicação de Finanças Pessoais - Versão Standalone
  * Funciona 100% no navegador usando apenas localStorage
