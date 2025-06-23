@@ -12,6 +12,7 @@
     "dev:webpack": "npm run webpack:dev",
     "dev:api": "npm run json-server",
     "build": "npm run webpack:build",
+    "vercel-build": "npm run webpack:build",
     "start": "npm run dev:webpack",
     "serve": "npm run json-server",
     "clean": "rimraf dist",
@@ -28,6 +29,10 @@
   "author": "",
   "license": "ISC",
   "description": "Aplicação modular de finanças pessoais com arquitetura ES6 modules",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.27.4",
