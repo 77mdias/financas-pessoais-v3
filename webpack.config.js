@@ -12,7 +12,7 @@ export default (env, argv) => {
 
   return {
     entry: {
-      app: './src/index.js'
+      app: './public/js/app.js'
     },
 
     output: {
@@ -68,21 +68,6 @@ export default (env, argv) => {
           }
         },
         {
-          test: /\.s[ac]ss$/i,
-          use: [
-            isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
-            'css-loader',
-            {
-              loader: 'sass-loader',
-              options: {
-                sassOptions: {
-                  includePaths: [path.resolve(__dirname, 'src/styles')]
-                }
-              },
-            },
-          ],
-        },
-        {
           test: /\.css$/i,
           use: [
             isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -110,7 +95,7 @@ export default (env, argv) => {
       new CleanWebpackPlugin(),
 
       new HtmlWebpackPlugin({
-        template: './src/template.html',
+        template: './public/index.html',
         filename: 'index.html',
         inject: 'body',
         minify: !isDevelopment ? {
@@ -133,23 +118,11 @@ export default (env, argv) => {
           chunkFilename: 'css/[id].[contenthash].css',
         })
       ] : []),
-
-      // CopyWebpackPlugin removido pois public/assets não existe
     ],
 
     resolve: {
       extensions: ['.js', '.mjs'],
-      alias: {
-        '@': path.resolve(__dirname, 'src'),
-        '@components': path.resolve(__dirname, 'src/components'),
-        '@services': path.resolve(__dirname, 'src/services'),
-        '@managers': path.resolve(__dirname, 'src/managers'),
-        '@ui': path.resolve(__dirname, 'src/ui'),
-        '@utils': path.resolve(__dirname, 'src/utils'),
-        '@styles': path.resolve(__dirname, 'src/styles'),
-        '@assets': path.resolve(__dirname, 'src/assets')
-      },
-      modules: ['node_modules', path.resolve(__dirname, 'src')],
+      modules: ['node_modules', path.resolve(__dirname, 'public')],
       mainFields: ['browser', 'module', 'main']
     },
 
