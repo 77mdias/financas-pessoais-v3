@@ -1,0 +1,52 @@
+{
+  "name": "12-exercicio-sistema-de-requisicao",
+  "version": "2.0.0",
+  "main": "public/index.html",
+  "type": "module",
+  "scripts": {
+    "json-server": "json-server --watch db.json --port 3001",
+    "webpack:dev": "webpack serve --mode development",
+    "webpack:build": "webpack --mode production",
+    "webpack:analyze": "webpack-bundle-analyzer dist/stats.json",
+    "dev": "concurrently \"npm run json-server\" \"npm run webpack:dev\"",
+    "dev:webpack": "npm run webpack:dev",
+    "dev:api": "npm run json-server",
+    "build": "npm run webpack:build",
+    "start": "npm run dev:webpack",
+    "serve": "npm run json-server",
+    "clean": "rimraf dist",
+    "lint": "echo 'Linting configurado futuramente'",
+    "test": "echo 'Testes configurados futuramente'"
+  },
+  "keywords": [
+    "javascript",
+    "finanças",
+    "crud",
+    "modules",
+    "es6"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Aplicação modular de finanças pessoais com arquitetura ES6 modules",
+  "dependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
+    "@vercel/speed-insights": "^1.2.0",
+    "babel-loader": "^10.0.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^13.0.0",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.3",
+    "json-server": "^1.0.0-beta.3",
+    "mini-css-extract-plugin": "^2.9.2",
+    "sass": "^1.89.2",
+    "sass-loader": "^16.0.5",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}

@@ -1,0 +1,52 @@
+// =============================================================================
+// SASS FUNCTIONS
+// =============================================================================
+
+/// Remove a unidade de um valor
+/// @param {Number} $number - Número com unidade
+/// @return {Number} - Número sem unidade
+@function strip-unit($number) {
+  @if type-of($number) == "number" and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}
+
+/// Converte px para rem
+/// @param {Number} $pixels - Valor em pixels
+/// @param {Number} $base - Tamanho base da fonte (padrão: 16px)
+/// @return {Number} - Valor em rem
+@function px-to-rem($pixels, $base: 16px) {
+  @return strip-unit($pixels) / strip-unit($base) * 1rem;
+}
+
+/// Converte px para em
+/// @param {Number} $pixels - Valor em pixels
+/// @param {Number} $base - Tamanho base da fonte (padrão: 16px)
+/// @return {Number} - Valor em em
+@function px-to-em($pixels, $base: 16px) {
+  @return strip-unit($pixels) / strip-unit($base) * 1em;
+}
+
+/// Calcula a largura de uma coluna no grid
+/// @param {Number} $columns - Número de colunas
+/// @param {Number} $total - Total de colunas (padrão: 12)
+/// @return {Number} - Largura em porcentagem
+@function grid-width($columns, $total: 12) {
+  @return percentage($columns / $total);
+}
+
+/// Função para criar sombras suaves
+/// @param {Number} $level - Nível da sombra (1-5)
+/// @return {String} - Valor da box-shadow
+@function shadow($level: 1) {
+  $shadows: (
+    1: 0 1px 3px rgba(0, 0, 0, 0.12),
+    2: 0 1px 6px rgba(0, 0, 0, 0.15),
+    3: 0 4px 6px rgba(0, 0, 0, 0.1),
+    4: 0 8px 25px rgba(0, 0, 0, 0.15),
+    5: 0 15px 35px rgba(0, 0, 0, 0.2),
+  );
+
+  @return map-get($shadows, $level);
+}

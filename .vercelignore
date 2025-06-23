@@ -1,0 +1,40 @@
+# Ignorar arquivos e pastas desnecessários no deploy
+
+# Arquivos de desenvolvimento
+public/
+src/
+*.md
+GUIA.md
+README-WEBPACK.md
+DEPLOY-VERCEL.md
+
+# Node modules já são ignorados por padrão
+node_modules/
+
+# Configurações de desenvolvimento
+webpack.config.js
+.babelrc.json
+
+# Dados locais
+db.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history 
