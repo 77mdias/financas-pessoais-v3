@@ -1,15 +1,13 @@
-// Versão simplificada sem imports externos para uso direto no navegador
-// import { TransactionManager } from '../../src/managers/TransactionManager.js';
-
 /**
- * Aplicação principal de Finanças Pessoais
- * Versão standalone sem dependências externas
+ * Aplicação de Finanças Pessoais - Versão Standalone
+ * Funciona 100% no navegador usando apenas localStorage
+ * Não precisa de json-server ou API externa
  */
 class FinanceApp {
   constructor() {
     this.transactions = [];
     this.isInitialized = false;
-    this.apiBaseUrl = 'http://localhost:3001/transactions';
+    this.storageKey = 'financeApp_transactions';
   }
 
   /**
@@ -24,14 +22,11 @@ class FinanceApp {
         await this.waitForDOMReady();
       }
 
+      // Carrega dados do localStorage
+      this.loadTransactions();
+
       // Configura eventos
       this.setupEventListeners();
-
-      // Carrega transações
-      await this.loadTransactions();
-
-      // Configura tratamento de erros globais
-      this.setupGlobalErrorHandling();
 
       // Configura funcionalidades extras
       this.setupExtraFeatures();
@@ -42,6 +37,50 @@ class FinanceApp {
     } catch (error) {
       console.error('❌ Erro ao inicializar aplicação:', error);
       this.showInitializationError(error);
+    }
+  }
+
+  /**
+   * Carrega transações do localStorage
+   */
+  loadTransactions() {
+    try {
+      const savedTransactions = localStorage.getItem(this.storageKey);
+
+      if (savedTransactions) {
+        this.transactions = JSON.parse(savedTransactions);
+      } else {
+        // Dados iniciais se não houver nada salvo
+        this.transactions = [
+          { id: 1, name: "Salário", value: 5000 },
+          { id: 2, name: "Mercado", value: -350 },
+          { id: 3, name: "Freelance", value: 1200 }
+        ];
+        this.saveTransactions();
+      }
+
+      this.renderTransactions();
+      this.updateBalance();
+      console.log(`📊 ${this.transactions.length} transações carregadas do localStorage`);
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar transações:', error);
+      this.transactions = [];
+      this.renderTransactions();
+      this.updateBalance();
+    }
+  }
+
+  /**
+   * Salva transações no localStorage
+   */
+  saveTransactions() {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.transactions));
+      console.log('💾 Transações salvas no localStorage');
+    } catch (error) {
+      console.error('❌ Erro ao salvar transações:', error);
+      this.showError('Erro ao salvar dados. Verifique se o localStorage está disponível.');
     }
   }
 
@@ -62,32 +101,12 @@ class FinanceApp {
   }
 
   /**
-   * Carrega transações da API
-   */
-  async loadTransactions() {
-    try {
-      const response = await fetch(this.apiBaseUrl);
-      if (!response.ok) throw new Error('Erro ao carregar transações');
-
-      this.transactions = await response.json();
-      this.renderTransactions();
-      this.updateBalance();
-
-      console.log(`📊 ${this.transactions.length} transações carregadas`);
-    } catch (error) {
-      console.error('❌ Erro ao carregar transações:', error);
-      this.showError('Erro ao carregar transações. Verifique se o json-server está rodando na porta 3001.');
-    }
-  }
-
-  /**
    * Manipula o envio do formulário
    */
-  async handleSubmit(event) {
+  handleSubmit(event) {
     event.preventDefault();
 
-    const formData = new FormData(event.target);
-    const name = document.getElementById('name').value;
+    const name = document.getElementById('name').value.trim();
     const value = parseFloat(document.getElementById('value').value);
 
     if (!name || isNaN(value)) {
@@ -96,35 +115,33 @@ class FinanceApp {
     }
 
     const transactionData = { name, value };
-
     const editingId = event.target.dataset.editingId;
+
     if (editingId) {
-      await this.updateTransaction(editingId, transactionData);
+      this.updateTransaction(parseInt(editingId), transactionData);
     } else {
-      await this.createTransaction(transactionData);
+      this.createTransaction(transactionData);
     }
   }
 
   /**
    * Cria uma nova transação
    */
-  async createTransaction(transactionData) {
+  createTransaction(transactionData) {
     try {
-      const response = await fetch(this.apiBaseUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transactionData)
-      });
+      const newTransaction = {
+        id: Date.now(), // ID único baseado no timestamp
+        name: transactionData.name,
+        value: transactionData.value
+      };
 
-      if (!response.ok) throw new Error('Erro ao criar transação');
-
-      const newTransaction = await response.json();
       this.transactions.push(newTransaction);
-
+      this.saveTransactions();
       this.renderTransactions();
       this.updateBalance();
       this.resetForm();
       this.showSuccess('Transação criada com sucesso!');
+
     } catch (error) {
       console.error('❌ Erro ao criar transação:', error);
       this.showAlert('Erro ao criar transação. Tente novamente.');
@@ -134,26 +151,27 @@ class FinanceApp {
   /**
    * Atualiza uma transação
    */
-  async updateTransaction(id, transactionData) {
+  updateTransaction(id, transactionData) {
     try {
-      const response = await fetch(`${this.apiBaseUrl}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transactionData)
-      });
+      const index = this.transactions.findIndex(t => t.id === id);
 
-      if (!response.ok) throw new Error('Erro ao atualizar transação');
-
-      const updatedTransaction = await response.json();
-      const index = this.transactions.findIndex(t => t.id == id);
-      if (index !== -1) {
-        this.transactions[index] = updatedTransaction;
+      if (index === -1) {
+        this.showAlert('Transação não encontrada.');
+        return;
       }
 
+      this.transactions[index] = {
+        ...this.transactions[index],
+        name: transactionData.name,
+        value: transactionData.value
+      };
+
+      this.saveTransactions();
       this.renderTransactions();
       this.updateBalance();
       this.resetForm();
       this.showSuccess('Transação atualizada com sucesso!');
+
     } catch (error) {
       console.error('❌ Erro ao atualizar transação:', error);
       this.showAlert('Erro ao atualizar transação. Tente novamente.');
@@ -163,20 +181,23 @@ class FinanceApp {
   /**
    * Exclui uma transação
    */
-  async deleteTransaction(id) {
+  deleteTransaction(id) {
     if (!confirm('Tem certeza que deseja excluir esta transação?')) return;
 
     try {
-      const response = await fetch(`${this.apiBaseUrl}/${id}`, {
-        method: 'DELETE'
-      });
+      const initialLength = this.transactions.length;
+      this.transactions = this.transactions.filter(t => t.id !== parseInt(id));
 
-      if (!response.ok) throw new Error('Erro ao excluir transação');
+      if (this.transactions.length === initialLength) {
+        this.showAlert('Transação não encontrada.');
+        return;
+      }
 
-      this.transactions = this.transactions.filter(t => t.id != id);
+      this.saveTransactions();
       this.renderTransactions();
       this.updateBalance();
       this.showSuccess('Transação excluída com sucesso!');
+
     } catch (error) {
       console.error('❌ Erro ao excluir transação:', error);
       this.showAlert('Erro ao excluir transação. Tente novamente.');
@@ -187,8 +208,11 @@ class FinanceApp {
    * Inicia a edição de uma transação
    */
   editTransaction(id) {
-    const transaction = this.transactions.find(t => t.id == id);
-    if (!transaction) return;
+    const transaction = this.transactions.find(t => t.id === parseInt(id));
+    if (!transaction) {
+      this.showAlert('Transação não encontrada.');
+      return;
+    }
 
     document.getElementById('name').value = transaction.name;
     document.getElementById('value').value = transaction.value;
@@ -217,10 +241,10 @@ class FinanceApp {
     const submitBtn = document.getElementById('submit-btn');
     const cancelBtn = document.getElementById('cancel-btn');
 
-    form.reset();
-    form.removeAttribute('data-editing-id');
-    submitBtn.textContent = 'Adicionar Transação';
-    cancelBtn.style.display = 'none';
+    if (form) form.reset();
+    if (form) form.removeAttribute('data-editing-id');
+    if (submitBtn) submitBtn.textContent = 'Adicionar Transação';
+    if (cancelBtn) cancelBtn.style.display = 'none';
   }
 
   /**
@@ -231,7 +255,7 @@ class FinanceApp {
     if (!transactionsList) return;
 
     if (this.transactions.length === 0) {
-      transactionsList.innerHTML = '<p>Nenhuma transação encontrada.</p>';
+      transactionsList.innerHTML = '<p>Nenhuma transação encontrada. Adicione uma nova transação!</p>';
       return;
     }
 
@@ -263,6 +287,60 @@ class FinanceApp {
   }
 
   /**
+   * Limpa todos os dados
+   */
+  clearAllData() {
+    if (!confirm('⚠️ Isso irá apagar TODAS as transações. Tem certeza?')) return;
+
+    this.transactions = [];
+    this.saveTransactions();
+    this.renderTransactions();
+    this.updateBalance();
+    this.showSuccess('Todos os dados foram apagados!');
+  }
+
+  /**
+   * Exporta transações para JSON
+   */
+  exportTransactions() {
+    const dataStr = JSON.stringify(this.transactions, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `transacoes_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+    this.showSuccess('Dados exportados com sucesso!');
+  }
+
+  /**
+   * Importa transações de arquivo JSON
+   */
+  importTransactions(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        if (Array.isArray(importedData)) {
+          this.transactions = importedData;
+          this.saveTransactions();
+          this.renderTransactions();
+          this.updateBalance();
+          this.showSuccess('Dados importados com sucesso!');
+        } else {
+          this.showAlert('Formato de arquivo inválido.');
+        }
+      } catch (error) {
+        this.showAlert('Erro ao importar arquivo. Verifique o formato.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  /**
    * Mostra mensagem de sucesso
    */
   showSuccess(message) {
@@ -282,43 +360,8 @@ class FinanceApp {
    * Mostra mensagem de erro
    */
   showError(message) {
-    console.error(message);
+    console.error('❌ ' + message);
     alert('❌ ' + message);
-  }
-
-  /**
-   * Calcula estatísticas das transações
-   */
-  calculateStatistics() {
-    const income = this.transactions.filter(t => t.value > 0);
-    const expenses = this.transactions.filter(t => t.value < 0);
-    const totalIncome = income.reduce((sum, t) => sum + t.value, 0);
-    const totalExpenses = Math.abs(expenses.reduce((sum, t) => sum + t.value, 0));
-
-    return {
-      totalTransactions: this.transactions.length,
-      totalIncome,
-      totalExpenses,
-      balance: totalIncome - totalExpenses,
-      incomeCount: income.length,
-      expenseCount: expenses.length
-    };
-  }
-
-  /**
-   * Exporta transações para JSON
-   */
-  exportTransactions() {
-    const dataStr = JSON.stringify(this.transactions, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `transacoes_${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-
-    URL.revokeObjectURL(url);
   }
 
   /**
@@ -335,19 +378,6 @@ class FinanceApp {
   }
 
   /**
-   * Configura tratamento de erros globais
-   */
-  setupGlobalErrorHandling() {
-    window.addEventListener('error', (event) => {
-      console.error('❌ Erro global capturado:', event.error);
-    });
-
-    window.addEventListener('unhandledrejection', (event) => {
-      console.error('❌ Promise rejeitada não tratada:', event.reason);
-    });
-  }
-
-  /**
    * Configura funcionalidades extras da aplicação
    */
   setupExtraFeatures() {
@@ -357,8 +387,8 @@ class FinanceApp {
     // Adiciona informações de debug no console
     this.setupDebugInfo();
 
-    // Configura visibilidade da página
-    this.setupPageVisibility();
+    // Configura tratamento de erros globais
+    this.setupGlobalErrorHandling();
   }
 
   /**
@@ -392,26 +422,26 @@ class FinanceApp {
     // Adiciona métodos de debug ao objeto window
     window.financeApp = {
       getTransactions: () => this.transactions,
-      getStatistics: () => this.calculateStatistics(),
+      clearAll: () => this.clearAllData(),
       exportData: () => this.exportTransactions(),
       refresh: () => this.loadTransactions(),
-      version: '2.0.0',
-      architecture: 'Modular'
+      version: '3.0.0',
+      mode: 'Standalone - localStorage only'
     };
 
     console.log('🔧 Ferramentas de debug disponíveis em window.financeApp');
   }
 
   /**
-   * Configura comportamento quando a página fica visível/invisível
+   * Configura tratamento de erros globais
    */
-  setupPageVisibility() {
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && this.isInitialized) {
-        // Recarrega dados quando a página volta a ficar visível
-        console.log('👁️ Página ficou visível, recarregando dados...');
-        this.loadTransactions();
-      }
+  setupGlobalErrorHandling() {
+    window.addEventListener('error', (event) => {
+      console.error('❌ Erro global capturado:', event.error);
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('❌ Promise rejeitada não tratada:', event.reason);
     });
   }
 
@@ -440,21 +470,17 @@ class FinanceApp {
   getAppInfo() {
     return {
       initialized: this.isInitialized,
-      version: '2.0.0',
-      architecture: 'Modular',
-      modules: [
-        'TransactionManager',
-        'TransactionService',
-        'UIManager',
-        'Formatter'
-      ],
+      version: '3.0.0',
+      mode: 'Standalone',
+      storage: 'localStorage',
+      transactionsCount: this.transactions.length,
       features: [
         'CRUD completo',
-        'Validação de dados',
+        'localStorage persistente',
         'Interface responsiva',
-        'Tratamento de erros',
         'Atalhos de teclado',
-        'Debug tools'
+        'Exportar/Importar dados',
+        'Sem dependência de servidor'
       ]
     };
   }
@@ -464,18 +490,18 @@ class FinanceApp {
 const app = new FinanceApp();
 app.init();
 
-// Exporta para uso global se necessário
+// Exporta para uso global
 window.app = app;
 
 // Log de inicialização
 console.log(`
 ╔══════════════════════════════════════╗
-║     💰 FINANÇAS PESSOAIS V2.0       ║
+║     💰 FINANÇAS PESSOAIS V3.0       ║
 ║                                      ║
-║  🏗️  Arquitetura Modular             ║
-║  📦 Módulos ES6                      ║
-║  🎨 Interface Moderna                ║
-║  🔧 Ferramentas de Debug             ║
+║  🏗️  Modo Standalone                 ║
+║  💾 localStorage Only                ║
+║  🎨 Interface Responsiva             ║
+║  🔧 Sem Dependência de Servidor      ║
 ║                                      ║
 ║  Desenvolvido com ❤️ em JavaScript   ║
 ╚══════════════════════════════════════╝

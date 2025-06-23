@@ -3,55 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Finanças Pessoais</title>
+    <title>💰 Finanças Pessoais</title>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <div class="container">
-      <header>
+      <div class="header">
         <h1>💰 Finanças Pessoais</h1>
-        <div class="balance">
-          <h2>Saldo Total: R$ <span id="balance">0,00</span></h2>
-        </div>
-      </header>
+        <p>Controle suas receitas e despesas</p>
+      </div>
 
-      <main>
-        <section class="form-section">
-          <h3>Nova Transação</h3>
-          <form id="transaction-form">
-            <div class="form-group">
-              <label for="name">Nome da Transação:</label>
-              <input
-                type="text"
-                id="name"
-                required
-                placeholder="Ex: Salário, Mercado, Conta de luz..."
-              />
-            </div>
-            <div class="form-group">
-              <label for="value">Valor:</label>
-              <input
-                type="number"
-                id="value"
-                step="0.01"
-                required
-                placeholder="Use valores negativos para gastos"
-              />
-            </div>
-            <button type="submit" id="submit-btn">Adicionar Transação</button>
-            <button type="button" id="cancel-btn" style="display: none">
-              Cancelar Edição
-            </button>
-          </form>
-        </section>
+      <div class="balance-section">
+        <div class="balance-label">Saldo Total</div>
+        <div id="balance" class="balance">R$ 0.00</div>
+      </div>
 
-        <section class="transactions-section">
-          <h3>Transações</h3>
-          <div id="transactions-list">
-            <!-- Transações serão carregadas aqui -->
+      <div class="form-section">
+        <form id="transaction-form">
+          <div class="form-group">
+            <label for="name">Nome da Transação</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Ex: Salário, Mercado, Conta de luz..."
+              required
+            />
           </div>
-        </section>
-      </main>
+
+          <div class="form-group">
+            <label for="value">Valor (R$)</label>
+            <input
+              type="number"
+              id="value"
+              name="value"
+              step="0.01"
+              placeholder="Use valores negativos para despesas"
+              required
+            />
+          </div>
+
+          <div class="button-group">
+            <button type="submit" id="submit-btn" class="btn btn-primary">
+              ➕ Adicionar Transação
+            </button>
+            <button type="button" id="cancel-btn" class="btn btn-secondary">
+              ❌ Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="transactions-section">
+        <h2 class="section-title">📊 Suas Transações</h2>
+        <div id="transactions-list">
+          <p>Carregando transações...</p>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="js/app.js"></script>

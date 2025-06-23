@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💰 Finanças Pessoais - Teste Standalone</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+      }
+
+      .balance-section {
+        padding: 30px;
+        text-align: center;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .balance-label {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 10px;
+      }
+
+      .balance {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #28a745;
+      }
+
+      .balance.negative {
+        color: #dc3545;
+      }
+
+      .form-section {
+        padding: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: white;
+        flex: 1;
+      }
+
+      .btn-primary:hover {
+        background: #5a6fd8;
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+        display: none;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .transactions-section {
+        padding: 30px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .transaction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        border-left: 4px solid;
+      }
+
+      .transaction-item.income {
+        background: #d4edda;
+        border-left-color: #28a745;
+      }
+
+      .transaction-item.expense {
+        background: #f8d7da;
+        border-left-color: #dc3545;
+      }
+
+      .transaction-info {
+        flex: 1;
+      }
+
+      .transaction-name {
+        font-weight: 600;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .transaction-value {
+        font-size: 1.1rem;
+        font-weight: bold;
+      }
+
+      .transaction-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .edit-btn,
+      .delete-btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .edit-btn {
+        background: #ffc107;
+        color: #212529;
+      }
+
+      .edit-btn:hover {
+        background: #e0a800;
+      }
+
+      .delete-btn {
+        background: #dc3545;
+        color: white;
+      }
+
+      .delete-btn:hover {
+        background: #c82333;
+      }
+
+      .debug-info {
+        padding: 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          margin: 10px;
+          border-radius: 10px;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .balance {
+          font-size: 2.5rem;
+        }
+
+        .button-group {
+          flex-direction: column;
+        }
+
+        .transaction-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .transaction-actions {
+          width: 100%;
+          justify-content: flex-end;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>💰 Finanças Pessoais</h1>
+        <p>Controle suas receitas e despesas - Versão Standalone</p>
+      </div>
+
+      <div class="balance-section">
+        <div class="balance-label">Saldo Total</div>
+        <div id="balance" class="balance">R$ 0.00</div>
+      </div>
+
+      <div class="form-section">
+        <form id="transaction-form">
+          <div class="form-group">
+            <label for="name">Nome da Transação</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Ex: Salário, Mercado, Conta de luz..."
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="value">Valor (R$)</label>
+            <input
+              type="number"
+              id="value"
+              name="value"
+              step="0.01"
+              placeholder="Use valores negativos para despesas"
+              required
+            />
+          </div>
+
+          <div class="button-group">
+            <button type="submit" id="submit-btn" class="btn btn-primary">
+              ➕ Adicionar Transação
+            </button>
+            <button type="button" id="cancel-btn" class="btn btn-secondary">
+              ❌ Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="transactions-section">
+        <h2 class="section-title">📊 Suas Transações</h2>
+        <div id="transactions-list">
+          <p>Carregando transações...</p>
+        </div>
+      </div>
+
+      <div class="debug-info">
+        <strong>🔧 Modo Debug:</strong><br />
+        • Abra o Console (F12) para ver logs detalhados<br />
+        • Use <code>window.financeApp</code> para ferramentas de debug<br />
+        • Dados salvos automaticamente no localStorage<br />
+        • Não precisa de json-server ou API externa
+      </div>
+    </div>
+
+    <script src="public/js/app.js"></script>
+  </body>
+</html>
