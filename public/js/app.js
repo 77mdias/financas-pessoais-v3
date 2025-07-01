@@ -93,6 +93,7 @@ class FinanceApp {
   setupEventListeners() {
     const form = document.getElementById('transaction-form');
     const cancelBtn = document.getElementById('cancel-btn');
+    const valueInput = document.getElementById('value');
 
     if (form) {
       form.addEventListener('submit', (e) => this.handleSubmit(e));
@@ -101,6 +102,63 @@ class FinanceApp {
     if (cancelBtn) {
       cancelBtn.addEventListener('click', () => this.cancelEdit());
     }
+
+    // Filtro em tempo real para o campo de valor
+    if (valueInput) {
+      valueInput.addEventListener('input', (e) => this.filterValueInput(e));
+      valueInput.addEventListener('keypress', (e) => this.validateValueKeypress(e));
+    }
+  }
+
+  /**
+   * Filtra a entrada do campo de valor em tempo real
+   */
+  filterValueInput(event) {
+    let value = event.target.value;
+    
+    // Remove caracteres inválidos, mantendo apenas números, ponto e sinal de menos
+    value = value.replace(/[^0-9.-]/g, '');
+    
+    // Garante que só existe um ponto decimal
+    const parts = value.split('.');
+    if (parts.length > 2) {
+      value = parts[0] + '.' + parts.slice(1).join('');
+    }
+    
+    // Garante que o sinal de menos só aparece no início
+    const minusCount = (value.match(/-/g) || []).length;
+    if (minusCount > 1 || (value.includes('-') && value.indexOf('-') !== 0)) {
+      value = value.replace(/-/g, '');
+      if (event.target.value.startsWith('-')) {
+        value = '-' + value;
+      }
+    }
+    
+    event.target.value = value;
+  }
+
+  /**
+   * Valida teclas pressionadas no campo de valor
+   */
+  validateValueKeypress(event) {
+    const char = String.fromCharCode(event.which);
+    const currentValue = event.target.value;
+    
+    // Permite teclas de controle (backspace, delete, arrows, etc.)
+    if (event.which <= 32) return true;
+    
+    // Permite números
+    if (char >= '0' && char <= '9') return true;
+    
+    // Permite ponto decimal se ainda não existe um
+    if (char === '.' && !currentValue.includes('.')) return true;
+    
+    // Permite sinal de menos apenas no início e se ainda não existe
+    if (char === '-' && currentValue.length === 0) return true;
+    
+    // Bloqueia todos os outros caracteres
+    event.preventDefault();
+    return false;
   }
 
   /**
@@ -110,10 +168,25 @@ class FinanceApp {
     event.preventDefault();
 
     const name = document.getElementById('name').value.trim();
-    const value = parseFloat(document.getElementById('value').value);
+    const valueInput = document.getElementById('value').value.trim();
 
-    if (!name || isNaN(value)) {
-      this.showAlert('Por favor, preencha todos os campos corretamente.');
+    // Validação melhorada para valores
+    if (!name) {
+      this.showAlert('Por favor, informe o nome da transação.');
+      return;
+    }
+
+    if (!valueInput) {
+      this.showAlert('Por favor, informe o valor da transação.');
+      return;
+    }
+
+    // Remove espaços e valida formato numérico (aceita negativos)
+    const cleanValue = valueInput.replace(/\s/g, '');
+    const value = parseFloat(cleanValue);
+
+    if (isNaN(value) || !this.isValidNumber(cleanValue)) {
+      this.showAlert('Por favor, informe um valor numérico válido. Use o ponto (.) para decimais e o sinal (-) para valores negativos.\nExemplos: 150, -75.50, 1000.00');
       return;
     }
 
@@ -125,6 +198,15 @@ class FinanceApp {
     } else {
       this.createTransaction(transactionData);
     }
+  }
+
+  /**
+   * Valida se o valor é um número válido (incluindo negativos)
+   */
+  isValidNumber(value) {
+    // Regex para validar números com ou sem decimais, incluindo negativos
+    const numberRegex = /^-?(?:\d+(?:\.\d*)?|\.\d+)$/;
+    return numberRegex.test(value);
   }
 
   /**

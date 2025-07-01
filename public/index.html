@@ -34,11 +34,12 @@
           <div class="form-group">
             <label for="value">Valor (R$)</label>
             <input
-              type="number"
+              type="text"
               id="value"
               name="value"
-              step="0.01"
-              placeholder="Use valores negativos para despesas"
+              inputmode="decimal"
+              pattern="-?[0-9]*\.?[0-9]+"
+              placeholder="Use valores negativos para despesas (ex: -150.50)"
               required
             />
           </div>
